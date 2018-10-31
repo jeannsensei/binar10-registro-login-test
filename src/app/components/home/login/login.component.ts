@@ -34,11 +34,8 @@ export class LoginComponent implements OnInit {
     route: ActivatedRoute
   ) {
     this.loginForm = this.formBuilder.group({
-      username: ['', Validators.required],
-      password: [
-        '',
-        [Validators.required, Validators.minLength(6), Validators.maxLength(50)]
-      ]
+      username: [''],
+      password: ['', [Validators.minLength(6), Validators.maxLength(50)]]
     });
   }
 
@@ -66,13 +63,27 @@ export class LoginComponent implements OnInit {
       )
       .subscribe(
         data => {
-          console.log('POST Request is successful ', data);
+          // console.log(data['status']);
+          // console.log('POST Request is successful ', data);
           const token = data['access_token'];
           localStorage.setItem('token', token);
-          // this.router.navigate(['/contacto']);
+          this.router.navigate(['/contacto']);
+          this.http
+            .get('http://192.168.1.62/supervisores_api/public/api/posts', {
+              headers: new HttpHeaders({
+                Accept: 'application/json',
+                Authorization: 'Bearer' + ' ' + localStorage.getItem('token')
+              })
+            })
+            .subscribe(textos => console.log(textos));
         },
         error => {
           console.log('Error', error);
+          // if ((error['status'] = 401)) {
+          //   console.log('error 401 lol');
+          // } else {
+          //   console.log('pasó esa damon');
+          // }
         }
       );
     // alert('SUCCESS!! :-)\n\n' + JSON.stringify(this.registerForm.value));
